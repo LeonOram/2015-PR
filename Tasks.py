@@ -233,7 +233,24 @@ def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
     Board[FinishRank][FinishFile] = Board[StartRank][StartFile]
     Board[StartRank][StartFile] = "  "
 
-    
+def ConfirmMove(StartSquare,FinishSquare):
+  StartSquare = str(StartSquare)
+  FinishSquare = str(FinishSquare)
+  Cont = False
+  while Cont == False:
+    Cont=True
+    print("Move from Rank{0},File{1} to Rank{2},File{3}?".format(StartSquare[1],StartSquare[0],FinishSquare[1],FinishSquare[0]))
+    Confirm = input("Confirm move (Yes/No)")
+    Confirm = Confirm[0].lower()
+    if Confirm == "y":
+      Confirmed = True
+    elif Confirm == "n":
+      Confirmed = False
+    else:
+      print("Please enter Yes or No")
+      Cont = False
+  return Confirmed
+  
 if __name__ == "__main__":
   Board = CreateBoard() #0th index not used
   StartSquare = 0 
@@ -249,16 +266,19 @@ if __name__ == "__main__":
     while not(GameOver):
       DisplayBoard(Board)
       DisplayWhoseTurnItIs(WhoseTurn)
-      MoveIsLegal = False
-      while not(MoveIsLegal):
-        StartSquare, FinishSquare = GetMove(StartSquare, FinishSquare)
-        StartRank = StartSquare % 10
-        StartFile = StartSquare // 10
-        FinishRank = FinishSquare % 10
-        FinishFile = FinishSquare // 10
-        MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
-        if not(MoveIsLegal):
-          print("That is not a legal move - please try again")
+      MoveIsConfirmed = False
+      while not(MoveIsConfirmed):
+        MoveIsLegal = False
+        while not(MoveIsLegal):
+          StartSquare, FinishSquare = GetMove(StartSquare, FinishSquare)
+          StartRank = StartSquare % 10
+          StartFile = StartSquare // 10
+          FinishRank = FinishSquare % 10
+          FinishFile = FinishSquare // 10
+          MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
+          if not(MoveIsLegal):
+            print("That is not a legal move - please try again")
+        MoveIsConfirmed = ConfirmMove(StartSquare,FinishSquare)        
       GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
       MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
       if GameOver:
