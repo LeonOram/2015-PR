@@ -198,8 +198,28 @@ def InitialiseBoard(Board, SampleGame):
           Board[RankNo][FileNo] = "  "    
                     
 def GetMove(StartSquare, FinishSquare):
-  StartSquare = int(input("Enter coordinates of square containing piece to move (file first): "))
-  FinishSquare = int(input("Enter coordinates of square to move piece to (file first): "))
+  cont1=False
+  cont2=False
+  while not cont1:
+    StartSquare = int(input("Enter coordinates of square containing piece to move (file first): "))
+    if len(str(StartSquare)) != 2:
+      print("Please enter File and Rank")
+    elif  (StartSquare % 10)>8  or (StartSquare % 10) < 0:
+      print("Please enter a valid postion")
+    elif (StartSquare // 10) > 8 or (StartSquare // 10) < 0:
+      print("Please enter a valid postion")
+    else:
+      cont1 = True
+  while not cont2:
+    FinishSquare = int(input("Enter coordinates of square to move piece to (file first): "))
+    if len(str(FinishSquare)) != 2:
+      print("Please enter File and Rank")
+    elif  (FinishSquare % 10)>8  or (FinishSquare % 10) < 0:
+      print("Please enter a valid postion")
+    elif (FinishSquare // 10) > 8 or (FinishSquare // 10) < 0:
+      print("Please enter a valid postion")
+    else:
+      cont2 = True
   return StartSquare, FinishSquare
 
 def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):

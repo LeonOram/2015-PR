@@ -4,3 +4,7 @@ Task 2:
 	3. The piece moves off the board
 	4. IndexError
 	5. If rank/file > 8 then list index out of range. If File < 1 then invalid but if Rank < 1 Valid and moves off of board 
+	6. CheckMoveIsLegal
+
+Task 3:
+	1. GetMove
