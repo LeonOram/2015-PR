@@ -45,14 +45,14 @@ def CheckIfGameWillBeWon(Board, FinishRank, FinishFile):
 def DisplayBoard(Board):
   print()
   for RankNo in range(1, BOARDDIMENSION + 1):
-    print("     _______________________")
-    print(RankNo, end="   ")
+    print("    -------------------------")
+    print("R{}  ".format(RankNo),end = "")
     for FileNo in range(1, BOARDDIMENSION + 1):
       print("|" + Board[RankNo][FileNo], end="")
     print("|")
-  print("     _______________________")
+  print("    -------------------------")
   print()
-  print("      1  2  3  4  5  6  7  8")
+  print("     F1 F2 F3 F4 F5 F6 F7 F8")
   print()
   print()    
 
