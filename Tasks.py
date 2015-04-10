@@ -223,7 +223,10 @@ def GetMove(StartSquare, FinishSquare):
   return StartSquare, FinishSquare
 
 def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
-  if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R":
+  if Board[FinishRank][FinishFile] != "  ":
+    Mover,Move,Taken,Take = GetPieceName(StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
+    print("{0} {1} takes {2} {3}".format(Mover,Move,Taken,Take))
+  if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig
     Board[FinishRank][FinishFile] = "WM"
     Board[StartRank][StartFile] = "  "
   elif WhoseTurn == "B" and FinishRank == 8 and Board[StartRank][StartFile][1] == "R":
@@ -243,6 +246,7 @@ def ConfirmMove(StartSquare,FinishSquare):
     Confirm = input("Confirm move (Yes/No)")
     Confirm = Confirm[0].lower()
     if Confirm == "y":
+      print("Move Confirmed")
       Confirmed = True
     elif Confirm == "n":
       Confirmed = False
@@ -250,7 +254,43 @@ def ConfirmMove(StartSquare,FinishSquare):
       print("Please enter Yes or No")
       Cont = False
   return Confirmed
-  
+
+def GetPieceName(StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
+  #Moving piece
+  if Board[StartRank][StartFile][1] == "S":
+    Move = "Sarrum"
+  elif Board[StartRank][StartFile][1] == "M":
+    Move = "Marzaz pani"
+  elif Board[StartRank][StartFile][1] == "N":
+    Move = "Nabu"
+  elif Board[StartRank][StartFile][1] == "E":
+    Move = "Etlu"
+  elif Board[StartRank][StartFile][1] == "G":
+    Move = "Gisgigir"
+  elif Board[StartRank][StartFile][1] == "R":
+    Move = "Redum"
+  #Taken Piece
+  if Board[FinishRank][FinishFile] [1] == "S":
+    Take = "Sarrum"
+  elif Board[FinishRank][FinishFile] [1] == "M":
+    Take = "Marzaz pani"
+  elif Board[FinishRank][FinishFile] [1] == "N":
+    Take = "Nabu"
+  elif Board[FinishRank][FinishFile] [1] == "G":
+    Take = "Gisgigir"
+  elif Board[FinishRank][FinishFile] [1] == "E":
+    Take = "Etlu"
+  elif Board[FinishRank][FinishFile] [1] == "R":
+    Take = "Redum"
+  #Colour
+  if WhoseTurn == "W":
+    Mover = "White"
+    Taken = "Black"
+  else:
+    Mover = "Black"
+    Taken = "White"
+  return Mover,Move,Taken,Take
+
 if __name__ == "__main__":
   Board = CreateBoard() #0th index not used
   StartSquare = 0 
