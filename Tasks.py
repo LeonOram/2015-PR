@@ -229,9 +229,11 @@ def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
   if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig
     Board[FinishRank][FinishFile] = "WM"
     Board[StartRank][StartFile] = "  "
+    print("White Redum promoted to Marzaz pani")
   elif WhoseTurn == "B" and FinishRank == 8 and Board[StartRank][StartFile][1] == "R":
     Board[FinishRank][FinishFile] = "BM"
     Board[StartRank][StartFile] = "  "
+    print("Black Redum promoted to Marzaz pani")
   else:
     Board[FinishRank][FinishFile] = Board[StartRank][StartFile]
     Board[StartRank][StartFile] = "  "
