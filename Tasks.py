@@ -223,6 +223,7 @@ def GetMove(StartSquare, FinishSquare):
   return StartSquare, FinishSquare
 
 def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
+  CheckWithRedum(Board,FinishRank,FinishFile,WhoseTurn)
   if Board[FinishRank][FinishFile] != "  ":
     Mover,Move,Taken,Take = GetPieceName(StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
     print("{0} {1} takes {2} {3}".format(Mover,Move,Taken,Take))
@@ -293,6 +294,41 @@ def GetPieceName(StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
     Taken = "White"
   return Mover,Move,Taken,Take
 
+def GetValidBoardPosition(Rank,File):
+
+  return Valid
+
+def CheckWithRedum(Board,FinishRank,FinishFile,WhoseTurn):
+  if WhoseTurn == "W":
+    if Board[FinishRank-1][FinishFile+1][1] == "S" or Board[FinishRank-1][FinishFile-1][1] == "S":
+      if Board[FinishRank-1][FinishFile+1][1] == "B" or Board[FinishRank-1][FinishFile-1][1] == "B" :
+        print("Sarrum in check")
+  if WhoseTurn == "B":
+    if Board[FinishRank+1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile-1][1] == "S":
+      if Board[FinishRank+1][FinishFile+1][1] == "W" or Board[FinishRank+1][FinishFile-1][1] == "W":
+        print("Sarrum in check")
+
+def CheckWithNabu(Board,FinishRank,FinishFile,WhoseTurn):
+  if WhoseTurn == "W":
+    if Board[FinishRank-1][FinishFile-1][1] == "S" or Board[FinishRank-1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile-1][1] == "S":
+      if Board[FinishRank-1][FinishFile-1][1] == "B" or Board[FinishRank-1][FinishFile+1][1] == "B" or Board[FinishRank+1][FinishFile+1][1] == "B" or Board[FinishRank+1][FinishFile-1][1] == "B" :
+        print("Sarrum in check")
+  if WhoseTurn == "W":
+    if Board[FinishRank-1][FinishFile-1][1] == "S" or Board[FinishRank-1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile-1][1] == "S":
+      if Board[FinishRank-1][FinishFile-1][1] == "W" or Board[FinishRank-1][FinishFile+1][1] == "W" or Board[FinishRank+1][FinishFile+1][1] == "W" or Board[FinishRank+1][FinishFile-1][1] == "W" :
+        print("Sarrum in check")
+
+def CheckWithMarzazPani(Board,FinishRank,FinishFile,WhoseTurn):
+  if WhoseTurn == "W":
+    if Board[FinishRank][FinishFile-1][1] == "S" or Board[FinishRank][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile][1] == "S" or Board[FinishRank-1][FinishFile][1] == "S":
+      if Board[FinishRank][FinishFile-1][1] == "B" or Board[FinishRank][FinishFile+1][1] == "B" or Board[FinishRank+1][FinishFile][1] == "B" or Board[FinishRank-1][FinishFile][1] == "B" :
+        print("Sarrum in check")
+  if WhoseTurn == "W":
+    if Board[FinishRank][FinishFile-1][1] == "S" or Board[FinishRank][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile][1] == "S" or Board[FinishRank-1][FinishFile][1] == "S":
+      if Board[FinishRank][FinishFile-1][1] == "W" or Board[FinishRank][FinishFile+1][1] == "W" or Board[FinishRank+1][FinishFile][1] == "W" or Board[FinishRank-1][FinishFile][1] == "W" :
+        print("Sarrum in check")
+def CheckWithEtlu(Board,FinishRank,FinishFile,WhoseTurn):
+
 if __name__ == "__main__":
   Board = CreateBoard() #0th index not used
   StartSquare = 0 
@@ -316,7 +352,7 @@ if __name__ == "__main__":
           StartRank = StartSquare % 10
           StartFile = StartSquare // 10
           FinishRank = FinishSquare % 10
-          FinishFile = FinishSquare // 10
+          FinishFile = FinishSquare // 10 
           MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
           if not(MoveIsLegal):
             print("That is not a legal move - please try again")

@@ -18,3 +18,27 @@ Task 6:
 
 Task 7:
 	1. DisplayBoard()
+
+Task 8:
+	Fixed Value - A variable that is not changed once assigned
+	Stepper - A variable that iterates in a systematic way
+	Most recent holder - Stores the latest value from a calculation or input
+	Most wanted holder - Stores the most appropriate value received, eg max value
+	Gatherer - accumulates values
+	Transformation - stores the output of a calculation
+	Follower - set to the value of another variable before it is changed 
+	Temporary - only holds a value for a short time
+
+	Fixed Value - BOARDDIMENSION
+	Stepper - RankNo
+	Most Recent Holder - StartSquare
+	Most Wanted Holder - 
+	Gatherer
+	Transformaton - RankDifference
+	Follower
+	Temporary
+
+Task 9
+	Pass by Value - Creates a copy of the value to work with
+	Pass by Reference - Works with the original data
+
