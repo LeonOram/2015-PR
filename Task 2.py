@@ -20,11 +20,12 @@ def DisplayWhoseTurnItIs(WhoseTurn):
     print("It is Black's turn")
 
 def GetTypeOfGame():
+  accept = ["YES","Y","NO","N"]
   Continue = False
   while Continue == False:
     TypeOfGame = input("Do you want to play the sample game (enter Y for Yes)? ")
-    TypeOfGame = TypeOfGame[0].upper()
-    if TypeOfGame == "Y" or TypeOfGame == "N":
+    TypeOfGame = TypeOfGame.upper()
+    if TypeOfGame in accept:
       Continue = True
     else:
       print("Please enter Y or N")
@@ -127,7 +128,7 @@ def CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseT
   MoveIsLegal = True
   if (FinishFile == StartFile) and (FinishRank == StartRank):
     MoveIsLegal = False
-  elif int(FinishFile) > BOARDDIMENSION or int(FinishRank) > BOARDDIMENSION:
+  elif int(FinishFile) > 8 or int(FinishRank) > 8:
     MoveIsLegal = False
   elif int(FinishFile) < 1 or int(FinishRank) < 1:
     MoveIsLegal = False
@@ -223,7 +224,6 @@ def GetMove(StartSquare, FinishSquare):
   return StartSquare, FinishSquare
 
 def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
-  #CheckCheck(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
   if Board[FinishRank][FinishFile] != "  ":
     Mover,Move,Taken,Take = GetPieceName(StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
     print("{0} {1} takes {2} {3}".format(Mover,Move,Taken,Take))
@@ -294,83 +294,44 @@ def GetPieceName(StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
     Taken = "White"
   return Mover,Move,Taken,Take
 
-def GetValidBoardPosition(Rank,File):
+def display_menu():
+  print('''Main Menu
 
-  return Valid
+1. Start new game
+2. Load existing game
+3. Play sample game
+4. View high score
+5. Settings
+6. Quit program
+  ''')
 
-#Check Check
-def CheckWithRedum(Board,FinishRank,FinishFile,WhoseTurn):
-  if WhoseTurn == "W":
-    if Board[FinishRank]<1 and  [FinishFile+1]<8:
-      if Board[FinishRank-1][FinishFile+1][1] == "S" or Board[FinishRank-1][FinishFile-1][1] == "S":
-        if Board[FinishRank-1][FinishFile+1][1] == "B" or Board[FinishRank-1][FinishFile-1][1] == "B" :
-          Check = True
-  if WhoseTurn == "B":
-    if Board[FinishRank+1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile-1][1] == "S":
-      if Board[FinishRank+1][FinishFile+1][1] == "W" or Board[FinishRank+1][FinishFile-1][1] == "W":
-        Check = True
-  return Check
 
-def CheckWithNabu(Board,FinishRank,FinishFile,WhoseTurn):
-  if WhoseTurn == "W":
-    if Board[FinishRank-1][FinishFile-1][1] == "S" or Board[FinishRank-1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile-1][1] == "S":
-      if Board[FinishRank-1][FinishFile-1][1] == "B" or Board[FinishRank-1][FinishFile+1][1] == "B" or Board[FinishRank+1][FinishFile+1][1] == "B" or Board[FinishRank+1][FinishFile-1][1] == "B" :
-        Check = True
-  if WhoseTurn == "W":
-    if Board[FinishRank-1][FinishFile-1][1] == "S" or Board[FinishRank-1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile-1][1] == "S":
-      if Board[FinishRank-1][FinishFile-1][1] == "W" or Board[FinishRank-1][FinishFile+1][1] == "W" or Board[FinishRank+1][FinishFile+1][1] == "W" or Board[FinishRank+1][FinishFile-1][1] == "W" :
-        Check = True
-  return Check
+def get_menu_selection():
+  continu = True
+  accept = ["1","2","3","4","5","6"]
+  while continu:
+    Choice = input("Please select an option: ")
+    if Choice in accept:
+      continu=False
+    else:
+      print("Please enter a valid choice")
+  return Choice
 
-def CheckWithMarzazPani(Board,FinishRank,FinishFile,WhoseTurn):
-  if WhoseTurn == "W":
-    if Board[FinishRank][FinishFile-1][1] == "S" or Board[FinishRank][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile][1] == "S" or Board[FinishRank-1][FinishFile][1] == "S":
-      if Board[FinishRank][FinishFile-1][1] == "B" or Board[FinishRank][FinishFile+1][1] == "B" or Board[FinishRank+1][FinishFile][1] == "B" or Board[FinishRank-1][FinishFile][1] == "B" :
-        Check = True
-  if WhoseTurn == "W":
-    if Board[FinishRank][FinishFile-1][1] == "S" or Board[FinishRank][FinishFile+1][1] == "S" or Board[FinishRank+1][FinishFile][1] == "S" or Board[FinishRank-1][FinishFile][1] == "S":
-      if Board[FinishRank][FinishFile-1][1] == "W" or Board[FinishRank][FinishFile+1][1] == "W" or Board[FinishRank+1][FinishFile][1] == "W" or Board[FinishRank-1][FinishFile][1] == "W" :
-        Check = True
-  return Check
+def make_selection(Choice):
+  if Choice == "1":
+    play_game()
+  elif Choice == "2":
+    function
+  elif Choice == "3":
+    function
+  elif Choice == "4":
+    function
+  elif Choice == "5":
+    function
+  elif Choice == "6":
+    function
 
-def CheckWithEtlu(Board,FinishRank,FinishFile,WhoseTurn):
-  if WhoseTurn == "W":
-    if Board[FinishRank][FinishFile-2][1] == "S" or Board[FinishRank][FinishFile+2][1] == "S" or Board[FinishRank+2][FinishFile][1] == "S" or Board[FinishRank-2][FinishFile][1] == "S":
-      if Board[FinishRank][FinishFile-2][1] == "B" or Board[FinishRank][FinishFile+2][1] == "B" or Board[FinishRank+2][FinishFile][1] == "B" or Board[FinishRank-2][FinishFile][1] == "B" :
-        Check = True
-  if WhoseTurn == "W":
-    if Board[FinishRank][FinishFile-2][1] == "S" or Board[FinishRank][FinishFile+2][1] == "S" or Board[FinishRank+2][FinishFile][1] == "S" or Board[FinishRank-2][FinishFile][1] == "S":
-      if Board[FinishRank][FinishFile-2][1] == "W" or Board[FinishRank][FinishFile+2][1] == "W" or Board[FinishRank+2][FinishFile][1] == "W" or Board[FinishRank-2][FinishFile][1] == "W" :
-        Check = True
-  return Check
-
-def CheckWithGisgigir(Board,FinishRank,FinishFile,WhoseTurn):
-  for count in range(7):
-    if WhoseTurn == "W":
-      if Board[FinishRank][FinishFile-count][1] == "S" or Board[FinishRank][FinishFile+count][1] == "S" or Board[FinishRank+count][FinishFile][1] == "S" or Board[FinishRank-count][FinishFile][1] == "S":
-        if Board[FinishRank][FinishFile-count][1] == "B" or Board[FinishRank][FinishFile+count][1] == "B" or Board[FinishRank+count][FinishFile][1] == "B" or Board[FinishRank-count][FinishFile][1] == "B" :
-          Check = True
-    if WhoseTurn == "W":
-      if Board[FinishRank][FinishFile-count][1] == "S" or Board[FinishRank][FinishFile+count][1] == "S" or Board[FinishRank+count][FinishFile][1] == "S" or Board[FinishRank-count][FinishFile][1] == "S":
-        if Board[FinishRank][FinishFile-count][1] == "W" or Board[FinishRank][FinishFile+count][1] == "W" or Board[FinishRank+count][FinishFile][1] == "W" or Board[FinishRank-count][FinishFile][1] == "W" :
-          Check = True
-  return Check
-
-def CheckCheck(Board,StartRank,StartFile,FinshRank,FinishFile,WhoseTurn):
-  Piece = Board[StartRank][StartFile][1]
-  if Piece == "R":
-    Check = CheckWithRedum(Board,FinishRank,FinishFile,WhoseTurn)
-  elif Piece == "N":
-    Check = CheckWithNabu(Board,FinishRank,FinishFile,WhoseTurn)
-  elif Piece == "M":
-    Check = CheckWithMarzazPani(Board,FinishRank,FinishFile,WhoseTurn)
-  elif Piece == "E":
-    Check = CheckWithEtlu(Board,FinishRank,FinishFile,WhoseTurn)
-  elif Piece == "G":
-    Check = CheckWithGisgigir(Board,FinishRank,FinishFile,WhoseTurn)
-  print(Check)
-
-if __name__ == "__main__":
+def play_game():
   Board = CreateBoard() #0th index not used
   StartSquare = 0 
   FinishSquare = 0
@@ -393,7 +354,7 @@ if __name__ == "__main__":
           StartRank = StartSquare % 10
           StartFile = StartSquare // 10
           FinishRank = FinishSquare % 10
-          FinishFile = FinishSquare // 10 
+          FinishFile = FinishSquare // 10
           MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
           if not(MoveIsLegal):
             print("That is not a legal move - please try again")
@@ -409,3 +370,47 @@ if __name__ == "__main__":
     PlayAgain = input("Do you want to play again (enter Y for Yes)? ")
     if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
       PlayAgain = chr(ord(PlayAgain) - 32)
+  
+
+if __name__ == "__main__":
+  display_menu()
+  Choice = get_menu_selection()
+  make_selection(Choice)
+##  Board = CreateBoard() #0th index not used
+##  StartSquare = 0 
+##  FinishSquare = 0
+##  PlayAgain = "Y"
+##  while PlayAgain == "Y":
+##    WhoseTurn = "W"
+##    GameOver = False
+##    SampleGame = GetTypeOfGame()
+##    if ord(SampleGame) >= 97 and ord(SampleGame) <= 122:
+##      SampleGame = chr(ord(SampleGame) - 32)
+##    InitialiseBoard(Board, SampleGame)
+##    while not(GameOver):
+##      DisplayBoard(Board)
+##      DisplayWhoseTurnItIs(WhoseTurn)
+##      MoveIsConfirmed = False
+##      while not(MoveIsConfirmed):
+##        MoveIsLegal = False
+##        while not(MoveIsLegal):
+##          StartSquare, FinishSquare = GetMove(StartSquare, FinishSquare)
+##          StartRank = StartSquare % 10
+##          StartFile = StartSquare // 10
+##          FinishRank = FinishSquare % 10
+##          FinishFile = FinishSquare // 10
+##          MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
+##          if not(MoveIsLegal):
+##            print("That is not a legal move - please try again")
+##        MoveIsConfirmed = ConfirmMove(StartSquare,FinishSquare)        
+##      GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
+##      MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
+##      if GameOver:
+##        DisplayWinner(WhoseTurn)
+##      if WhoseTurn == "W":
+##        WhoseTurn = "B"
+##      else:
+##        WhoseTurn = "W"
+##    PlayAgain = input("Do you want to play again (enter Y for Yes)? ")
+##    if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
+##      PlayAgain = chr(ord(PlayAgain) - 32)
