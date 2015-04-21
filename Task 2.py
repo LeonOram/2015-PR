@@ -3,6 +3,8 @@
 # written by the AQA COMP1 Programmer Team
 # developed in the Python 3.4 programming environment
 
+import pickle
+ 
 BOARDDIMENSION = 8
 
 def CreateBoard():
@@ -198,14 +200,13 @@ def InitialiseBoard(Board, SampleGame):
         else:
           Board[RankNo][FileNo] = "  "    
 
-def validate(message):
+def validate(message,Board):
     cont=False
     while not cont:
       try:
         StartSquare = int(input(message))
         if StartSquare == -1:
-          options()
-          
+          options(Board)
         elif len(str(StartSquare)) != 2:
           print("Please enter File and Rank")
         elif  (StartSquare % 10)>8  or (StartSquare % 10) < 0:
@@ -218,9 +219,9 @@ def validate(message):
       except ValueError:
         pass
 
-def GetMove(StartSquare, FinishSquare):
-  StartSquare = validate("Enter coordinates of square containing piece to move (file first)(-1 for menu): ")
-  FinishSquare = validate("Enter coordinates of square to move piece to (file first)(-1 for menu): ")
+def GetMove(StartSquare, FinishSquare,Board):
+  StartSquare = validate("Enter coordinates of square containing piece to move (file first)(-1 for menu): ",Board)
+  FinishSquare = validate("Enter coordinates of square to move piece to (file first)(-1 for menu): ",Board)
   return StartSquare,FinishSquare
 
 
@@ -319,32 +320,34 @@ def get_menu_selection():
   return Choice
 
 def make_selection(Choice):
+  End = False
   if Choice == "1":
+    Board = CreateBoard() #0th index not used
     SampleGame = "N"
-    play_game(SampleGame)
+    InitialiseBoard(Board, SampleGame)
+    play_game(Board)
   elif Choice == "2":
-    pass
+    Board = load_game()
   elif Choice == "3":
+    Board = CreateBoard() #0th index not used
     SampleGame="Y"
-    play_game(SampleGame)
+    InitialiseBoard(Board, SampleGame)
+    play_game(Board)
   elif Choice == "4":
     pass
   elif Choice == "5":
     pass
   elif Choice == "6":
-    pass
+    End = True
+  return End
 
-def play_game(SampleGame):
-  Board = CreateBoard() #0th index not used
+def play_game(Board):
   StartSquare = 0 
   FinishSquare = 0
   PlayAgain = "Y"
   while PlayAgain == "Y":
     WhoseTurn = "W"
     GameOver = False
-    if ord(SampleGame) >= 97 and ord(SampleGame) <= 122:
-      SampleGame = chr(ord(SampleGame) - 32)
-    InitialiseBoard(Board, SampleGame)
     while not(GameOver):
       DisplayBoard(Board)
       DisplayWhoseTurnItIs(WhoseTurn)
@@ -352,7 +355,7 @@ def play_game(SampleGame):
       while not(MoveIsConfirmed):
         MoveIsLegal = False
         while not(MoveIsLegal):
-          StartSquare, FinishSquare = GetMove(StartSquare, FinishSquare)
+          StartSquare, FinishSquare = GetMove(StartSquare, FinishSquare,Board)
           StartRank = StartSquare % 10
           StartFile = StartSquare // 10
           FinishRank = FinishSquare % 10
@@ -373,9 +376,12 @@ def play_game(SampleGame):
     if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
       PlayAgain = chr(ord(PlayAgain) - 32)
 
-def options():
-  display_options()
-  get_option_choice()
+def options(Board):
+  Return = False
+  while Return == False:
+    display_options()
+    choice = get_option_choice()
+    Return = make_choice(choice,Board)
   
 def display_options():
   print(""" Options
@@ -383,20 +389,50 @@ def display_options():
 1. Save Game
 2. Quit to Menu
 3. Return to Game
+4. Surrender
 """)
 
 def get_option_choice():
   Choice = input("Please select an option: ")
-  accept=["1","2","3"]
+  accept=["1","2","3","4"]
   cont = False
   while cont == False: 
     if Choice in accept:
       cont = True
+  return Choice
+
+def make_choice(Choice,Board):
+  Return = False
+  if Choice == "1":
+    save_game(Board)
+  elif Choice == "2":
+    pass
+  elif Choice == "3":
+    Return = True
+  elif Choice == "4":
+    #surrender(WhosesTurn)
+    pass
+  return Return
+  
+
+def save_game(Board):
+  with open("SavedGame.dat",mode = "wb") as file:
+    pickle.dump(Board,file)
+
+def load_game():
+  with open("SavedGame.dat",mode = "rb") as file:
+    Board = pickle.load(file)
+    play_game(Board)
+
+def surrender(WhoseTurn):
+  print("Surrendering...")
 
 if __name__ == "__main__":
-  display_menu()
-  Choice = get_menu_selection()
-  make_selection(Choice)
+  End = False
+  while End == False:
+    display_menu()
+    Choice = get_menu_selection()
+    End = make_selection(Choice)
 ##  Board = CreateBoard() #0th index not used
 ##  StartSquare = 0 
 ##  FinishSquare = 0
