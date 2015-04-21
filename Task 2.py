@@ -19,17 +19,17 @@ def DisplayWhoseTurnItIs(WhoseTurn):
   else:
     print("It is Black's turn")
 
-def GetTypeOfGame():
-  accept = ["YES","Y","NO","N"]
-  Continue = False
-  while Continue == False:
-    TypeOfGame = input("Do you want to play the sample game (enter Y for Yes)? ")
-    TypeOfGame = TypeOfGame.upper()
-    if TypeOfGame in accept:
-      Continue = True
-    else:
-      print("Please enter Y or N")
-  return TypeOfGame
+##def GetTypeOfGame():
+##  accept = ["YES","Y","NO","N"]
+##  Continue = False
+##  while Continue == False:
+##    TypeOfGame = input("Do you want to play the sample game (enter Y for Yes)? ")
+##    TypeOfGame = TypeOfGame.upper()
+##    if TypeOfGame in accept:
+##      Continue = True
+##    else:
+##      print("Please enter Y or N")
+##  return TypeOfGame
 
 def DisplayWinner(WhoseTurn):
   if WhoseTurn == "W":
@@ -197,41 +197,42 @@ def InitialiseBoard(Board, SampleGame):
             Board[RankNo][FileNo] = Board[RankNo][FileNo] + "S"
         else:
           Board[RankNo][FileNo] = "  "    
-                    
+
+def validate(message):
+    cont=False
+    while not cont:
+      try:
+        StartSquare = int(input(message))
+        if StartSquare == -1:
+          options()
+          
+        elif len(str(StartSquare)) != 2:
+          print("Please enter File and Rank")
+        elif  (StartSquare % 10)>8  or (StartSquare % 10) < 0:
+          print("Please enter a valid postion")
+        elif (StartSquare // 10) > 8 or (StartSquare // 10) < 0:
+          print("Please enter a valid postion")
+        else:
+          cont = True
+        return StartSquare
+      except ValueError:
+        pass
+
 def GetMove(StartSquare, FinishSquare):
-  cont1=False
-  cont2=False
-  while not cont1:
-    StartSquare = int(input("Enter coordinates of square containing piece to move (file first): "))
-    if len(str(StartSquare)) != 2:
-      print("Please enter File and Rank")
-    elif  (StartSquare % 10)>8  or (StartSquare % 10) < 0:
-      print("Please enter a valid postion")
-    elif (StartSquare // 10) > 8 or (StartSquare // 10) < 0:
-      print("Please enter a valid postion")
-    else:
-      cont1 = True
-  while not cont2:
-    FinishSquare = int(input("Enter coordinates of square to move piece to (file first): "))
-    if len(str(FinishSquare)) != 2:
-      print("Please enter File and Rank")
-    elif  (FinishSquare % 10)>8  or (FinishSquare % 10) < 0:
-      print("Please enter a valid postion")
-    elif (FinishSquare // 10) > 8 or (FinishSquare // 10) < 0:
-      print("Please enter a valid postion")
-    else:
-      cont2 = True
-  return StartSquare, FinishSquare
+  StartSquare = validate("Enter coordinates of square containing piece to move (file first)(-1 for menu): ")
+  FinishSquare = validate("Enter coordinates of square to move piece to (file first)(-1 for menu): ")
+  return StartSquare,FinishSquare
+
 
 def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
   if Board[FinishRank][FinishFile] != "  ":
-    Mover,Move,Taken,Take = GetPieceName(StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
+    Mover,Move,Taken,Take = GetPieceName(Board,StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
     print("{0} {1} takes {2} {3}".format(Mover,Move,Taken,Take))
   if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig
     Board[FinishRank][FinishFile] = "WM"
     Board[StartRank][StartFile] = "  "
     print("White Redum promoted to Marzaz pani")
-  elif WhoseTurn == "B" and FinishRank == 8 and Board[StartRank][StartFile][1] == "R":
+  elif WhoseTurn == "B" and FinishRank == BOARDDIMENSION and Board[StartRank][StartFile][1] == "R":
     Board[FinishRank][FinishFile] = "BM"
     Board[StartRank][StartFile] = "  "
     print("Black Redum promoted to Marzaz pani")
@@ -258,7 +259,7 @@ def ConfirmMove(StartSquare,FinishSquare):
       Cont = False
   return Confirmed
 
-def GetPieceName(StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
+def GetPieceName(Board,StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
   #Moving piece
   if Board[StartRank][StartFile][1] == "S":
     Move = "Sarrum"
@@ -319,19 +320,21 @@ def get_menu_selection():
 
 def make_selection(Choice):
   if Choice == "1":
-    play_game()
+    SampleGame = "N"
+    play_game(SampleGame)
   elif Choice == "2":
-    function
+    pass
   elif Choice == "3":
-    function
+    SampleGame="Y"
+    play_game(SampleGame)
   elif Choice == "4":
-    function
+    pass
   elif Choice == "5":
-    function
+    pass
   elif Choice == "6":
-    function
+    pass
 
-def play_game():
+def play_game(SampleGame):
   Board = CreateBoard() #0th index not used
   StartSquare = 0 
   FinishSquare = 0
@@ -339,7 +342,6 @@ def play_game():
   while PlayAgain == "Y":
     WhoseTurn = "W"
     GameOver = False
-    SampleGame = GetTypeOfGame()
     if ord(SampleGame) >= 97 and ord(SampleGame) <= 122:
       SampleGame = chr(ord(SampleGame) - 32)
     InitialiseBoard(Board, SampleGame)
@@ -370,7 +372,26 @@ def play_game():
     PlayAgain = input("Do you want to play again (enter Y for Yes)? ")
     if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
       PlayAgain = chr(ord(PlayAgain) - 32)
+
+def options():
+  display_options()
+  get_option_choice()
   
+def display_options():
+  print(""" Options
+
+1. Save Game
+2. Quit to Menu
+3. Return to Game
+""")
+
+def get_option_choice():
+  Choice = input("Please select an option: ")
+  accept=["1","2","3"]
+  cont = False
+  while cont == False: 
+    if Choice in accept:
+      cont = True
 
 if __name__ == "__main__":
   display_menu()
