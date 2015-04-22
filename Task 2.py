@@ -206,7 +206,7 @@ def validate(message,Board):
       try:
         StartSquare = int(input(message))
         if StartSquare == -1:
-          options(Board)
+          options(Board,WhoseTurn)
         elif len(str(StartSquare)) != 2:
           print("Please enter File and Rank")
         elif  (StartSquare % 10)>8  or (StartSquare % 10) < 0:
@@ -297,7 +297,8 @@ def GetPieceName(Board,StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
   return Mover,Move,Taken,Take
 
 def display_menu():
-  print('''Main Menu
+  print('''
+Main Menu
 
 1. Start new game
 2. Load existing game
@@ -320,7 +321,6 @@ def get_menu_selection():
   return Choice
 
 def make_selection(Choice):
-  End = False
   if Choice == "1":
     Board = CreateBoard() #0th index not used
     SampleGame = "N"
@@ -338,7 +338,7 @@ def make_selection(Choice):
   elif Choice == "5":
     pass
   elif Choice == "6":
-    End = True
+    exit()
   return End
 
 def play_game(Board):
@@ -376,15 +376,16 @@ def play_game(Board):
     if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
       PlayAgain = chr(ord(PlayAgain) - 32)
 
-def options(Board):
+def options(Board,WhoseTurn):
   Return = False
   while Return == False:
     display_options()
     choice = get_option_choice()
-    Return = make_choice(choice,Board)
+    Return = make_choice(choice,Board,WhoseTurn)
   
 def display_options():
-  print(""" Options
+  print("""
+Options
 
 1. Save Game
 2. Quit to Menu
@@ -393,10 +394,10 @@ def display_options():
 """)
 
 def get_option_choice():
-  Choice = input("Please select an option: ")
   accept=["1","2","3","4"]
   cont = False
-  while cont == False: 
+  while cont == False:
+    Choice = input("Please select an option: ")
     if Choice in accept:
       cont = True
   return Choice
@@ -406,11 +407,11 @@ def make_choice(Choice,Board):
   if Choice == "1":
     save_game(Board)
   elif Choice == "2":
-    pass
+    main()
   elif Choice == "3":
     Return = True
   elif Choice == "4":
-    #surrender(WhosesTurn)
+    surrender(WhosesTurn)
     pass
   return Return
   
@@ -420,19 +421,29 @@ def save_game(Board):
     pickle.dump(Board,file)
 
 def load_game():
-  with open("SavedGame.dat",mode = "rb") as file:
-    Board = pickle.load(file)
-    play_game(Board)
+  try:
+    with open("SavedGame.dat",mode = "rb") as file:
+      Board = pickle.load(file)
+      play_game(Board)
+  except FileNotFoundError:
+    print("No saved game found")
 
 def surrender(WhoseTurn):
   print("Surrendering...")
 
-if __name__ == "__main__":
-  End = False
-  while End == False:
+def main():
+  while True:
     display_menu()
     Choice = get_menu_selection()
-    End = make_selection(Choice)
+    make_selection(Choice)
+##  Board = CreateBoard() #0th in
+if __name__ == "__main__":
+  main()
+##  End = False
+##  while End == False:
+##    display_menu()
+##    Choice = get_menu_selection()
+##    End = make_selection(Choice)
 ##  Board = CreateBoard() #0th index not used
 ##  StartSquare = 0 
 ##  FinishSquare = 0
