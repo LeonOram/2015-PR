@@ -200,29 +200,31 @@ def InitialiseBoard(Board, SampleGame):
         else:
           Board[RankNo][FileNo] = "  "    
 
-def validate(message,Board):
-    cont=False
-    while not cont:
-      try:
-        StartSquare = int(input(message))
-        if StartSquare == -1:
-          options(Board,WhoseTurn)
-        elif len(str(StartSquare)) != 2:
-          print("Please enter File and Rank")
-        elif  (StartSquare % 10)>8  or (StartSquare % 10) < 0:
-          print("Please enter a valid postion")
-        elif (StartSquare // 10) > 8 or (StartSquare // 10) < 0:
-          print("Please enter a valid postion")
-        else:
-          cont = True
-        return StartSquare
-      except ValueError:
-        pass
+def validate(message):
+  options  = False
+  cont=False
+  while not cont:
+    try:
+      StartSquare = int(input(message))
+      if StartSquare == -1:
+        options = True
+      elif len(str(StartSquare)) != 2:
+        print("Please enter File and Rank")
+      elif  (StartSquare % 10)>8  or (StartSquare % 10) < 0:
+        print("Please enter a valid postion")
+      elif (StartSquare // 10) > 8 or (StartSquare // 10) < 0:
+        print("Please enter a valid postion")
+      else:
+        cont = True
+      return StartSquare,options
+    except ValueError:
+      pass
 
-def GetMove(StartSquare, FinishSquare,Board):
-  StartSquare = validate("Enter coordinates of square containing piece to move (file first)(-1 for menu): ",Board)
-  FinishSquare = validate("Enter coordinates of square to move piece to (file first)(-1 for menu): ",Board)
-  return StartSquare,FinishSquare
+def GetMove(StartSquare, FinishSquare):
+  StartSquare,options = validate("Enter coordinates of square containing piece to move (file first)(-1 for menu): ")
+  if options != True:
+    FinishSquare,options = validate("Enter coordinates of square to move piece to (file first)(-1 for menu): ")
+  return StartSquare,FinishSquare,options
 
 
 def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
@@ -321,6 +323,7 @@ def get_menu_selection():
   return Choice
 
 def make_selection(Choice):
+  End = False
   if Choice == "1":
     Board = CreateBoard() #0th index not used
     SampleGame = "N"
@@ -342,47 +345,56 @@ def make_selection(Choice):
   return End
 
 def play_game(Board):
+  Quit = False
   StartSquare = 0 
   FinishSquare = 0
   PlayAgain = "Y"
-  while PlayAgain == "Y":
+  while PlayAgain == "Y" and Quit == False:
     WhoseTurn = "W"
     GameOver = False
-    while not(GameOver):
+    while not(GameOver) and Quit == False:
       DisplayBoard(Board)
       DisplayWhoseTurnItIs(WhoseTurn)
       MoveIsConfirmed = False
-      while not(MoveIsConfirmed):
+      while not(MoveIsConfirmed)and Quit == False:
         MoveIsLegal = False
-        while not(MoveIsLegal):
-          StartSquare, FinishSquare = GetMove(StartSquare, FinishSquare,Board)
-          StartRank = StartSquare % 10
-          StartFile = StartSquare // 10
-          FinishRank = FinishSquare % 10
-          FinishFile = FinishSquare // 10
-          MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
-          if not(MoveIsLegal):
-            print("That is not a legal move - please try again")
-        MoveIsConfirmed = ConfirmMove(StartSquare,FinishSquare)        
-      GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
-      MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
-      if GameOver:
-        DisplayWinner(WhoseTurn)
-      if WhoseTurn == "W":
-        WhoseTurn = "B"
-      else:
-        WhoseTurn = "W"
-    PlayAgain = input("Do you want to play again (enter Y for Yes)? ")
-    if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
-      PlayAgain = chr(ord(PlayAgain) - 32)
+        while not(MoveIsLegal) and Quit == False:
+          StartSquare, FinishSquare,options = GetMove(StartSquare, FinishSquare)
+          if options != True:
+            StartRank = StartSquare % 10
+            StartFile = StartSquare // 10
+            FinishRank = FinishSquare % 10
+            FinishFile = FinishSquare // 10
+            MoveIsLegal = CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
+            if not(MoveIsLegal):
+              print("That is not a legal move - please try again")
+          else:
+            Quit = Options(Board,WhoseTurn)
+        if Quit == False:
+          MoveIsConfirmed = ConfirmMove(StartSquare,FinishSquare)        
+      if Quit == False:
+        GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
+        MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
+        if GameOver:
+          DisplayWinner(WhoseTurn)
+        if WhoseTurn == "W":
+          WhoseTurn = "B"
+        else:
+          WhoseTurn = "W"
+    if Quit == False:
+      PlayAgain = input("Do you want to play again (enter Y for Yes)? ")
+      if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
+        PlayAgain = chr(ord(PlayAgain) - 32)
 
-def options(Board,WhoseTurn):
+def Options(Board,WhoseTurn):
   Return = False
-  while Return == False:
+  Quit = False
+  while Return == False and Quit == False:
     display_options()
     choice = get_option_choice()
-    Return = make_choice(choice,Board,WhoseTurn)
-  
+    Return,Quit = make_choice(choice,Board,WhoseTurn)
+  return Quit
+
 def display_options():
   print("""
 Options
@@ -402,18 +414,21 @@ def get_option_choice():
       cont = True
   return Choice
 
-def make_choice(Choice,Board):
+def make_choice(Choice,Board,WhoseTurn):
+  Quit = False
   Return = False
   if Choice == "1":
     save_game(Board)
   elif Choice == "2":
-    main()
+    Quit = True
   elif Choice == "3":
     Return = True
   elif Choice == "4":
-    surrender(WhosesTurn)
+    surrender(WhoseTurn)
+    GameOver = True
+    Quit = True
     pass
-  return Return
+  return Return,Quit
   
 
 def save_game(Board):
@@ -430,12 +445,65 @@ def load_game():
 
 def surrender(WhoseTurn):
   print("Surrendering...")
+  if WhoseTurn == "W":
+    print("White has surrendered. Black wins")
+  else:
+    print("Black has surrendered. White wins")
 
 def main():
-  while True:
+  Quit = False
+  while Quit != True:
     display_menu()
     Choice = get_menu_selection()
     make_selection(Choice)
+
+def InitialiseBoard():
+  Board = CreateBoard()
+  if SampleGame = True:
+    
+  pass
+
+def InitialiseNewBoard():
+  for RankNo in range(1, BOARDDIMENSION + 1):
+      for FileNo in range(1, BOARDDIMENSION + 1):
+        if RankNo == 2:
+          Board[RankNo][FileNo] = "BR"
+        elif RankNo == 7:
+          Board[RankNo][FileNo] = "WR"
+        elif RankNo == 1 or RankNo == 8:
+          if RankNo == 1:
+            Board[RankNo][FileNo] = "B"
+          if RankNo == 8:
+            Board[RankNo][FileNo] = "W"
+          if FileNo == 1 or FileNo == 8:
+            Board[RankNo][FileNo] = Board[RankNo][FileNo] + "G"
+          elif FileNo == 2 or FileNo == 7:
+            Board[RankNo][FileNo] = Board[RankNo][FileNo] + "E"
+          elif FileNo == 3 or FileNo == 6:
+            Board[RankNo][FileNo] = Board[RankNo][FileNo] + "N"
+          elif FileNo == 4:
+            Board[RankNo][FileNo] = Board[RankNo][FileNo] + "M"
+          elif FileNo == 5:
+            Board[RankNo][FileNo] = Board[RankNo][FileNo] + "S"
+        else:
+          Board[RankNo][FileNo] = "  " 
+  return Board
+
+def InitialiseSampleBoard():
+  for RankNo in range(1, BOARDDIMENSION + 1):
+    for FileNo in range(1, BOARDDIMENSION + 1):
+      Board[RankNo][FileNo] = "  "
+      Board[1][2] = "BG"
+      Board[1][4] = "BS"
+      Board[1][8] = "WG"
+      Board[2][1] = "WR"
+      Board[3][1] = "WS"
+      Board[3][2] = "BE"
+      Board[3][8] = "BE"
+      Board[6][8] = "BR"
+  return Board
+
+
 ##  Board = CreateBoard() #0th in
 if __name__ == "__main__":
   main()
