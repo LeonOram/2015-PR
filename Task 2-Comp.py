@@ -154,6 +154,19 @@ def CheckEtluMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile):
     CheckEtluMoveIsLegal = True
   return CheckEtluMoveIsLegal
 
+def CheckKashshaptuMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, PieceColour):
+  CheckKashshaptuMoveIsLegal = True
+  if not CheckRedumMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, PieceColour):
+    if not CheckMarzazPaniMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile):
+      if not CheckGisgigirMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile):
+        if not CheckNabuMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile):
+          if not CheckEtluMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile):
+            CheckKashshaptuMoveIsLegal = False
+  return CheckKashshaptuMoveIsLegal
+    
+  
+  
+
 def CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
   MoveIsLegal = True
   if (FinishFile == StartFile) and (FinishRank == StartRank):
@@ -188,6 +201,8 @@ def CheckMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseT
         MoveIsLegal = CheckNabuMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile)
       elif PieceType == "E":
         MoveIsLegal = CheckEtluMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile)
+      elif PieceType == "K":
+        MoveIsLegal = CheckKashshaptuMoveIsLegal(Board, StartRank, StartFile, FinishRank, FinishFile,PieceColour)
   return MoveIsLegal
 
 ##def InitialiseBoard(Board, SampleGame):
@@ -260,14 +275,25 @@ def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
   if Board[FinishRank][FinishFile] != "  ":
     Mover,Move,Taken,Take = GetPieceName(Board,StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
     print("{0} {1} takes {2} {3}".format(Mover,Move,Taken,Take))
-  if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig
-    Board[FinishRank][FinishFile] = "WM"
-    Board[StartRank][StartFile] = "  "
-    print("White Redum promoted to Marzaz pani")
-  elif WhoseTurn == "B" and FinishRank == BOARDDIMENSION and Board[StartRank][StartFile][1] == "R":
-    Board[FinishRank][FinishFile] = "BM"
-    Board[StartRank][StartFile] = "  "
-    print("Black Redum promoted to Marzaz pani")
+  elif (FinishRank == 1 and WhoseTurn == "W")or (FinishRank == 8 and WhoseTurn == "B"):
+    if KASHSHAPTU == False:
+      if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig-Marzipan
+        Board[FinishRank][FinishFile] = "WM"
+        Board[StartRank][StartFile] = "  "
+        print("White Redum promoted to Marzaz pani")
+      elif WhoseTurn == "B" and FinishRank == BOARDDIMENSION and Board[StartRank][StartFile][1] == "R":
+        Board[FinishRank][FinishFile] = "BM"
+        Board[StartRank][StartFile] = "  "
+        print("Black Redum promoted to Marzaz pani")
+    elif KASHSHAPTU == True:
+      if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig Kashput
+        Board[FinishRank][FinishFile] = "WK"
+        Board[StartRank][StartFile] = "  "
+        print("White Redum promoted to Kashshaptu")
+      elif WhoseTurn == "B" and FinishRank == BOARDDIMENSION and Board[StartRank][StartFile][1] == "R":
+        Board[FinishRank][FinishFile] = "BK"
+        Board[StartRank][StartFile] = "  "
+        print("Black Redum promoted to Kashshaptu")
   else:
     Board[FinishRank][FinishFile] = Board[StartRank][StartFile]
     Board[StartRank][StartFile] = "  "
@@ -305,6 +331,8 @@ def GetPieceName(Board,StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
     Move = "Gisgigir"
   elif Board[StartRank][StartFile][1] == "R":
     Move = "Redum"
+  elif Board[StartRank][StartFile][1] == "K":
+    Move = "Kashshaptu"
   #Taken Piece
   if Board[FinishRank][FinishFile] [1] == "S":
     Take = "Sarrum"
@@ -318,6 +346,8 @@ def GetPieceName(Board,StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
     Take = "Etlu"
   elif Board[FinishRank][FinishFile] [1] == "R":
     Take = "Redum"
+  elif Board[StartRank][StartFile][1] == "K":
+    Take = "Kashshaptu"
   #Colour
   if WhoseTurn == "W":
     Mover = "White"
@@ -397,6 +427,7 @@ def get_setting_choice():
   return choice
 
 def execute_setting_choice(choice):
+  global KASHSHAPTU  
   return_menu = False
   if choice == "1":
     accept = ["Y","YES","N","NO"]
@@ -414,6 +445,7 @@ def execute_setting_choice(choice):
           KASHSHAPTU = False
   elif choice == "9":
     return_menu = True
+  print(KASHSHAPTU)
   return return_menu
   
 
