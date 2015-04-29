@@ -4,10 +4,18 @@
 # developed in the Python 3.4 programming environment
 
 import pickle
+from datetime import *
  
 BOARDDIMENSION = 8
 KASHSHAPTU = False
 
+class Score:
+  def __init__(self):
+    self.name = None
+    self.score = None
+    self.colour = None
+    self.date = None
+    
 def CreateBoard():
   Board = []
   for Count in range(BOARDDIMENSION + 1):
@@ -34,11 +42,13 @@ def DisplayWhoseTurnItIs(WhoseTurn):
 ##      print("Please enter Y or N")
 ##  return TypeOfGame
 
-def DisplayWinner(WhoseTurn):
+def DisplayWinner(WhoseTurn,white_move,black_move):
   if WhoseTurn == "W":
-    print("Black's Sarrum has been captured.  White wins!")
+    print("Black's Sarrum has been captured in {0} turns.  White wins!".format(white_moves))
+    get_highscore(WhoseTurn,white_move)
   else:
-    print("White's Sarrum has been captured.  Black wins!")
+    print("White's Sarrum has been captured in {0} turns.  Black wins!".format(black_moves))
+    get_highscore(WhoseTurn,black_move)
 
 def CheckIfGameWillBeWon(Board, FinishRank, FinishFile):
   if Board[FinishRank][FinishFile][1] == "S":
@@ -275,25 +285,24 @@ def MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
   if Board[FinishRank][FinishFile] != "  ":
     Mover,Move,Taken,Take = GetPieceName(Board,StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
     print("{0} {1} takes {2} {3}".format(Mover,Move,Taken,Take))
-  elif (FinishRank == 1 and WhoseTurn == "W")or (FinishRank == 8 and WhoseTurn == "B"):
+  if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig-Marzipan
     if KASHSHAPTU == False:
-      if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig-Marzipan
         Board[FinishRank][FinishFile] = "WM"
         Board[StartRank][StartFile] = "  "
         print("White Redum promoted to Marzaz pani")
-      elif WhoseTurn == "B" and FinishRank == BOARDDIMENSION and Board[StartRank][StartFile][1] == "R":
-        Board[FinishRank][FinishFile] = "BM"
-        Board[StartRank][StartFile] = "  "
-        print("Black Redum promoted to Marzaz pani")
     elif KASHSHAPTU == True:
-      if WhoseTurn == "W" and FinishRank == 1 and Board[StartRank][StartFile][1] == "R": #upgrade magig Kashput
-        Board[FinishRank][FinishFile] = "WK"
-        Board[StartRank][StartFile] = "  "
-        print("White Redum promoted to Kashshaptu")
-      elif WhoseTurn == "B" and FinishRank == BOARDDIMENSION and Board[StartRank][StartFile][1] == "R":
-        Board[FinishRank][FinishFile] = "BK"
-        Board[StartRank][StartFile] = "  "
-        print("Black Redum promoted to Kashshaptu")
+      Board[FinishRank][FinishFile] = "WK"
+      Board[StartRank][StartFile] = "  "
+      print("White Redum promoted to Kashshaptu")   
+  elif WhoseTurn == "B" and FinishRank == BOARDDIMENSION and Board[StartRank][StartFile][1] == "R":
+        if KASHSHAPTU == False:
+          Board[FinishRank][FinishFile] = "BM"
+          Board[StartRank][StartFile] = "  "
+          print("Black Redum promoted to Marzaz pani")
+        elif KASHSHAPTU == True:
+          Board[FinishRank][FinishFile] = "BK"
+          Board[StartRank][StartFile] = "  "
+          print("White Redum promoted to Kashshaptu")
   else:
     Board[FinishRank][FinishFile] = Board[StartRank][StartFile]
     Board[StartRank][StartFile] = "  "
@@ -369,7 +378,6 @@ Main Menu
 6. Quit program
   ''')
 
-
 def get_menu_selection():
   continu = True
   accept = ["1","2","3","4","5","6"]
@@ -380,6 +388,7 @@ def get_menu_selection():
     else:
       print("Please enter a valid choice")
   return Choice
+
 def make_selection(Choice):
     Board  = CreateBoard()
     End = False
@@ -445,11 +454,11 @@ def execute_setting_choice(choice):
           KASHSHAPTU = False
   elif choice == "9":
     return_menu = True
-  print(KASHSHAPTU)
   return return_menu
-  
 
 def play_game(Board):
+  white_move = 0
+  black_move = 0
   Quit = False
   StartSquare = 0 
   FinishSquare = 0
@@ -481,11 +490,13 @@ def play_game(Board):
         GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
         MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
         if GameOver:
-          DisplayWinner(WhoseTurn)
+          DisplayWinner(WhoseTurn,white_move,black_move)
         if WhoseTurn == "W":
           WhoseTurn = "B"
+          white_move = white_move +1
         else:
           WhoseTurn = "W"
+          black_move = black_move +1
     if Quit == False:
       PlayAgain = input("Do you want to play again (enter Y for Yes)? ")
       if ord(PlayAgain) >= 97 and ord(PlayAgain) <= 122:
@@ -533,7 +544,6 @@ def make_choice(Choice,Board,WhoseTurn):
     Quit = True
   return Return,Quit
   
-
 def save_game(Board):
   with open("SavedGame.dat",mode = "wb") as file:
     pickle.dump(Board,file)
@@ -553,7 +563,6 @@ def surrender(WhoseTurn):
   else:
     print("Black has surrendered. White wins")
 
-
 def InitialiseBoard(SampleGame):
     Board = CreateBoard()
     if SampleGame == True:
@@ -561,7 +570,6 @@ def InitialiseBoard(SampleGame):
     else:
         Board = InitialiseNewBoard(Board)
     return Board
-
 
 def InitialiseNewBoard(Board):
   for RankNo in range(1, BOARDDIMENSION + 1):
@@ -609,6 +617,31 @@ def InitialiseSampleBoard(Board):
       Board[6][8] = "BR"
   return Board
 
+def display_high_scores(scores):
+  if len(scores)>1:
+    print("High Scores \n")
+    print("-"*46)
+    print("|Name      |Colour|Number of Moves|Date      |")
+    print("-"*46)
+    for score in scores:
+      print("|{0:<10}|{1:<6}|{2:<15}|{3:<10}|".format(score.name,score.colour,score.moves,score.date))
+      print("-"*46)
+  else:
+    print("No High Scores")
+
+def get_highscores(WhoseTurn,moves,scores):
+  accept = ["Y","YES","N","NO"]
+  confirm = input("Do you want to add your name to the high score table? (Y/N)")
+  if confirm.upper() in accept:
+    if confirm.upper()[0] == "Y":
+      date=datetime.now()
+      new_score = Score()
+      new_score.name=input("Please enter your name: ")
+      new_score.colour = WhoseTurn
+      new_score.date = date.strftime("%d/%m/%Y")
+      new_score.score = moves 
+      
+    
 
 ##  Board = CreateBoard() #0th in
 if __name__ == "__main__":
