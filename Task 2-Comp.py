@@ -42,13 +42,13 @@ def DisplayWhoseTurnItIs(WhoseTurn):
 ##      print("Please enter Y or N")
 ##  return TypeOfGame
 
-def DisplayWinner(WhoseTurn,white_move,black_move):
+def DisplayWinner(WhoseTurn,white_move,black_move,scores):
   if WhoseTurn == "W":
-    print("Black's Sarrum has been captured in {0} turns.  White wins!".format(white_moves))
-    get_highscore(WhoseTurn,white_move)
+    print("Black's Sarrum has been captured in {0} turns.  White wins!".format(white_move))
+    scores = get_highscores(WhoseTurn,white_move,scores)
   else:
-    print("White's Sarrum has been captured in {0} turns.  Black wins!".format(black_moves))
-    get_highscore(WhoseTurn,black_move)
+    print("White's Sarrum has been captured in {0} turns.  Black wins!".format(black_move))
+    scores = get_highscore(WhoseTurn,black_move,scores)
 
 def CheckIfGameWillBeWon(Board, FinishRank, FinishFile):
   if Board[FinishRank][FinishFile][1] == "S":
@@ -311,19 +311,28 @@ def ConfirmMove(StartSquare,FinishSquare):
   StartSquare = str(StartSquare)
   FinishSquare = str(FinishSquare)
   Cont = False
+  accept = ["Y","YES","N","NO"]
   while Cont == False:
-    Cont=True
     print("Move from Rank{0},File{1} to Rank{2},File{3}?".format(StartSquare[1],StartSquare[0],FinishSquare[1],FinishSquare[0]))
     Confirm = input("Confirm move (Yes/No)")
-    Confirm = Confirm[0].lower()
-    if Confirm == "y":
-      print("Move Confirmed")
-      Confirmed = True
-    elif Confirm == "n":
-      Confirmed = False
-    else:
-      print("Please enter Yes or No")
-      Cont = False
+    if len(confirm) > 0:
+      confirm = confirm.upper()
+      if confirm in accept:
+        print("Move Confirmed")
+        Confirmed = True
+      else:
+        print("Invalid input")
+##    Cont=True
+##    print("Move from Rank{0},File{1} to Rank{2},File{3}?".format(StartSquare[1],StartSquare[0],FinishSquare[1],FinishSquare[0]))
+##    Confirm = input("Confirm move (Yes/No)")
+##    if Confirm == "y" or Confirm == "yes":
+##      print("Move Confirmed")
+##      Confirmed = True
+##    elif Confirm == "n" or Confirm == "no":
+##      Confirmed = False
+##    else:
+##      print("Please enter Yes or No")
+##      Cont = False
   return Confirmed
 
 def GetPieceName(Board,StartRank, StartFile, FinishRank, FinishFile, WhoseTurn):
@@ -389,19 +398,19 @@ def get_menu_selection():
       print("Please enter a valid choice")
   return Choice
 
-def make_selection(Choice):
+def make_selection(Choice,scores):
     Board  = CreateBoard()
     End = False
     if Choice == "1":
         SampleGame = False
         Board = InitialiseBoard(SampleGame)
-        play_game(Board)
+        play_game(Board,scores)
     elif Choice == "2":
         Board = load_game()
     elif Choice == "3":
         SampleGame=True
         Board = InitialiseBoard(SampleGame)
-        play_game(Board)
+        play_game(Board,scores)
     elif Choice == "4":
         pass
     elif Choice == "5":
@@ -456,9 +465,9 @@ def execute_setting_choice(choice):
     return_menu = True
   return return_menu
 
-def play_game(Board):
-  white_move = 0
-  black_move = 0
+def play_game(Board,scores):
+  white_move = 1
+  black_move = 1
   Quit = False
   StartSquare = 0 
   FinishSquare = 0
@@ -490,7 +499,7 @@ def play_game(Board):
         GameOver = CheckIfGameWillBeWon(Board, FinishRank, FinishFile)
         MakeMove(Board, StartRank, StartFile, FinishRank, FinishFile, WhoseTurn)
         if GameOver:
-          DisplayWinner(WhoseTurn,white_move,black_move)
+          DisplayWinner(WhoseTurn,white_move,black_move,scores)
         if WhoseTurn == "W":
           WhoseTurn = "B"
           white_move = white_move +1
@@ -508,7 +517,7 @@ def Options(Board,WhoseTurn):
   while Return == False and Quit == False:
     display_options()
     choice = get_option_choice()
-    Return,Quit = make_choice(choice,Board,WhoseTurn)
+    Return,Quit = make_choice(choice,Board,WhoseTurn,scores)
   return Quit
 
 def display_options():
@@ -530,11 +539,11 @@ def get_option_choice():
       cont = True
   return Choice
 
-def make_choice(Choice,Board,WhoseTurn):
+def make_choice(Choice,Board,WhoseTurn,scores):
   Quit = False
   Return = False
   if Choice == "1":
-    save_game(Board)
+    save_game(Board,scores)
   elif Choice == "2":
     Quit = True
   elif Choice == "3":
@@ -639,17 +648,20 @@ def get_highscores(WhoseTurn,moves,scores):
       new_score.name=input("Please enter your name: ")
       new_score.colour = WhoseTurn
       new_score.date = date.strftime("%d/%m/%Y")
-      new_score.score = moves 
+      new_score.score = moves
+      scores.append(new_score)
+  return scores
       
     
 
 ##  Board = CreateBoard() #0th in
 if __name__ == "__main__":
   Quit = False
+  scores = []
   while Quit != True:
     display_menu()
     Choice = get_menu_selection()
-    make_selection(Choice)
+    make_selection(Choice,scores)
 ##  End = False
 ##  while End == False:
 ##    display_menu()
